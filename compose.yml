@@ -1,0 +1,26 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: vehicle-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: vehicleDB
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: ./backend
+    container_name: vehicle-backend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      MONGO_URI: mongodb://mongo:27017/vehicleDB
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:
