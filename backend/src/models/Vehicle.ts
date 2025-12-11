@@ -7,8 +7,8 @@ export interface Vehicle extends Document {
   fuel: string;
   type: string;
   vin: string;
-  color?: string | null;
-  mileage?: number | null;
+  color: string;
+  mileage: number;
 }
 
 const vehicleSchema = new Schema<Vehicle>(
@@ -19,8 +19,8 @@ const vehicleSchema = new Schema<Vehicle>(
     fuel: { type: String, required: true },
     type: { type: String, required: true },
     vin: { type: String, required: true },
-    color: { type: String, default: null },
-    mileage: { type: Number, default: null }
+    color: { type: String, required: true },
+    mileage: { type: Number, required: true }
   },
   { timestamps: true }
 );
