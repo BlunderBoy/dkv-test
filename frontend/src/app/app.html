@@ -1,1 +1,17 @@
-<router-outlet />
+<div style="position: absolute; top: 1rem; left: 1rem">
+        <img ngSrc="/logo.png"
+             style="cursor: pointer"
+             alt="logo"
+             width="128"
+             height="128"
+             priority
+             (click)="this.router.navigate(['/']);">
+</div>
+
+<div style="display: flex; justify-content: center; width: 100%; margin-top: 1rem">
+        <app-search style="width: 60%"></app-search>
+</div>
+
+<div style="margin-top: 3rem">
+    <router-outlet />
+</div>

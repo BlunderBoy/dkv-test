@@ -1,1 +1,45 @@
-<p>vehicle works!</p>
+<div>
+
+    @let v = vehicle();
+
+    <div style="display: flex; align-items: center; justify-content: center; width: 100%">
+        @if (v) {
+            <mat-card style="width: 80%;">
+                <mat-card-title style="padding: 1rem; font-size: 2.5rem; display: flex; align-items: center; gap: 1rem">
+                    <div style="width: 4rem; height: 4rem; background: gray" matTooltip="Placeholder picture of brand logo">
+
+                    </div>
+                    {{ v.name }} {{ v.vehicleModel }} <span
+                    style="font-size: 1.5rem"> {{ v.manufacturer }} </span>
+                </mat-card-title>
+
+                <div style="width: 100%; height: 30rem; background: lightgray">
+                    <p style="text-align: center;">
+                        Placeholder picture of the car
+                    </p>
+                </div>
+
+                <mat-card-content style="width: 100%; margin-top: 1rem; font-size: 1.2rem">
+                    <div style="display: flex; justify-content: space-between">
+                        <div style="width: 96%; display: flex; flex-direction: column; gap: 0.3rem">
+                            <app-list-item label="Name:" [value]="v.name"></app-list-item>
+                            <app-list-item label="Manufacturer:" [value]="v.manufacturer"></app-list-item>
+                            <app-list-item label="Model:" [value]="v.vehicleModel"></app-list-item>
+                            <app-list-item label="Fuel type:" [value]="v.fuel"></app-list-item>
+                            <app-list-item label="Vehicle type:" [value]="v.type"></app-list-item>
+                            <app-list-item label="VIN:" [value]="v.vin"></app-list-item>
+                            <app-list-item label="Color:" [value]="v.color" ></app-list-item>
+                            <app-list-item label="Mileage:" [value]="v.mileage"></app-list-item>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        } @else {
+            <mat-card>
+                <p style="font-size: 4rem; text-align: center; padding: 2rem">
+                    Vehicle not found!
+                </p>
+            </mat-card>
+        }
+    </div>
+</div>

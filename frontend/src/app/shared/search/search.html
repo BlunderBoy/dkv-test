@@ -1,0 +1,25 @@
+<form [formGroup]="form">
+    <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label> Search</mat-label>
+        <mat-autocomplete #auto='matAutocomplete' (optionSelected)="autocompleteOptionSelected($event)">
+            @for (vehicle of searchResults(); track vehicle._id) {
+                <mat-option [value]="vehicle.name" (onSelectionChange)="onSearchBarSelected($event, vehicle)">
+                    <div style="display: flex; gap: 1rem">
+                        <div [innerHTML]="vehicle.manufacturer | titlecase | boldSubstring:searchQuery()"> </div>
+                        <div [innerHTML]="vehicle.name | titlecase | boldSubstring:searchQuery()"> </div>
+                        <div [innerHTML]="vehicle.vehicleModel | titlecase | boldSubstring:searchQuery()"> </div>
+                        <div [innerHTML]="vehicle.fuel | titlecase | boldSubstring:searchQuery()"> </div>
+                        <div [innerHTML]="vehicle.type | titlecase | boldSubstring:searchQuery()"> </div>
+                    </div>
+                </mat-option>
+            }
+        </mat-autocomplete>
+        <input matInput formControlName="searchQuery" [matAutocomplete]="auto">
+        <mat-icon matPrefix>
+            search
+        </mat-icon>
+        <button mat-icon-button matSuffix (click)="resetSearch()">
+            <mat-icon> cancel</mat-icon>
+        </button>
+    </mat-form-field>
+</form>

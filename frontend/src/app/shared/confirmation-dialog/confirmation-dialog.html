@@ -1,0 +1,10 @@
+<p mat-dialog-title> {{ title() }} </p>
+
+<mat-dialog-content>
+    {{ message() }}
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button matButton="filled" type="submit" color="primary" (click)="onConfirm()" >Confirm</button>
+    <button matButton mat-dialog-close>Close</button>
+</mat-dialog-actions>

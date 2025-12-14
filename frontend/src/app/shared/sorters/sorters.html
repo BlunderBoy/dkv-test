@@ -1,0 +1,32 @@
+<div>
+    <div style="display: flex; flex-direction: column">
+        <ng-container
+            *ngTemplateOutlet="sortingCell;
+            context: {
+              $implicit: 'Name',
+              signal: nameSortingDirection
+            }">
+        </ng-container>
+
+        <ng-container
+            *ngTemplateOutlet="sortingCell;
+            context: {
+              $implicit: 'Mileage',
+              signal: mileageSortingDirection
+            }">
+        </ng-container>
+    </div>
+</div>
+
+<ng-template #sortingCell let-name let-signal="signal">
+    <div> {{ name }}</div>
+    <button matIconButton="tonal" (click)="changeDirection(signal)">
+        @if (signal() === 'ascending') {
+            <mat-icon> north</mat-icon>
+        } @else if (signal() === 'descending') {
+            <mat-icon> south</mat-icon>
+        } @else {
+            <mat-icon> remove</mat-icon>
+        }
+    </button>
+</ng-template>

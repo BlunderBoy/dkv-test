@@ -1,0 +1,12 @@
+<div style="display: flex; min-width: 8rem; align-items: center; justify-content: space-between">
+  <div>
+    <b> {{label()}} </b>
+  </div>
+  <div>
+      @if (value()) {
+        {{ value() }}
+      } @else {
+          Not specified.
+      }
+  </div>
+</div>

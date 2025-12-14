@@ -1,0 +1,57 @@
+<form [formGroup]="form">
+    <div style="display: flex; gap: 1rem; align-items: center; justify-content: space-around;">
+
+        <div style="display: flex; flex-direction: column">
+            <div style="display: flex; gap: 1rem">
+                <mat-form-field>
+                    <mat-label> Minimum Price</mat-label>
+                    <input type="number" matInput formControlName="minimumMileage"
+                           [value]="this.form.get('minimumMileage')!.value">
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label> Maximum Price</mat-label>
+                    <input type="number" matInput formControlName="maximumMileage"
+                           [value]="this.form.get('maximumMileage')!.value">
+                </mat-form-field>
+            </div>
+            <mat-slider min="0" max="150000" step="1000" showTickMarks discrete disableRipple
+                        [displayWith]="formatLabel">
+                <Label><strong>Mileage:</strong></Label>
+                <input matSliderStartThumb formControlName="minimumMileage"
+                       [value]="this.form.get('minimumMileage')!.value">
+                <input matSliderEndThumb formControlName="maximumMileage"
+                       [value]="this.form.get('maximumMileage')!.value">
+            </mat-slider>
+        </div>
+
+        <div style="display: flex; flex-direction: column">
+            <mat-form-field appearance="outline" style="width: 20rem">
+                <Label>Vehicle Type</Label>
+                <mat-select formControlName="vehicleType" multiple="true">
+                    @for (vehicleType of vehicleType; track vehicleType) {
+                        <mat-option [value]="vehicleType"> {{ vehicleType }}</mat-option>
+                    }
+                </mat-select>
+                <button matIconButton matSuffix (click)="clearFilter('type')">
+                    <mat-icon> cancel </mat-icon>
+                </button>
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="width: 20rem">
+                <Label>Fuel Type</Label>
+                <mat-select formControlName="fuelType" multiple="true">
+                    @for (fuelType of fuelTypes; track fuelType) {
+                        <mat-option [value]="fuelType"> {{ fuelType }}</mat-option>
+                    }
+                </mat-select>
+                <button matIconButton matSuffix (click)="clearFilter('fuel')">
+                    <mat-icon> cancel </mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+
+        <div style="display:flex; flex-direction: column; gap: 1rem">
+            <button matButton="filled" (click)="onFiltersSaved()"> Save</button>
+            <button matButton="elevated" (click)="onFiltersReset()"> Reset</button>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,79 @@
+@if (isEditMode()) {
+    <p mat-dialog-title> Edit </p>
+} @else {
+    <p mat-dialog-title> Create </p>
+}
+<mat-dialog-content>
+    <form [formGroup]="form">
+        <div style="display: flex; justify-items: center; flex-direction: column; gap: 0.2rem; width: 30rem; margin-top: 0.3rem">
+            <mat-form-field appearance="outline">
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="name">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Manufacturer</mat-label>
+                <input matInput formControlName="manufacturer">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Model</mat-label>
+                <input matInput formControlName="vehicleModel">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Fuel Type</mat-label>
+                <mat-select formControlName="fuel">
+                    @for (fuel of fuelTypes; track fuel) {
+                        <mat-option [value]="fuel"> {{ fuel }} </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Type</mat-label>
+                <mat-select formControlName="type">
+                    @for (vehicleType of vehicleType; track vehicleType) {
+                        <mat-option [value]="vehicleType"> {{ vehicleType }} </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Vin</mat-label>
+                <input matInput formControlName="vin">
+                <mat-hint>Vin should be 17 characters long.</mat-hint>
+                @if (form.get('vin')?.hasError('minlength')) {
+                    <mat-error> Vin is too short. Should be 17 characters.</mat-error>
+                } @else if (form.get('vin')?.hasError('maxLength')) {
+                    <mat-error> Vin is too long. Should be 17 characters.</mat-error>
+                }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Color</mat-label>
+                <input matInput formControlName="color">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Mileage</mat-label>
+                <input type="number" matInput formControlName="mileage">
+                <p matSuffix style="margin-right: 1rem">KM</p>
+            </mat-form-field>
+
+            @if (error() !== '') {
+                <div style=" font-size: 1.2rem; text-align: center; color: darkred">
+                    <strong>{{ error() }}</strong>
+                </div>
+            }
+        </div>
+
+        <mat-dialog-actions>
+            <button [disabled]="!this.form.valid" matButton="filled" type="submit" color="primary"
+                    (click)="onDialogSaved($event)">Save
+            </button>
+            <button matButton mat-dialog-close>Close</button>
+        </mat-dialog-actions>
+    </form>
+</mat-dialog-content>
+
