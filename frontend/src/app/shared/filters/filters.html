@@ -2,14 +2,18 @@
     <div style="display: flex; gap: 1rem; align-items: center; justify-content: space-around;">
 
         <div style="display: flex; flex-direction: column">
+            <div>
+                <mat-checkbox (change)="onUseFiltersChange()" [checked]="!filtersDisabled()"></mat-checkbox>
+                <mat-label> Enable Mileage Filters </mat-label>
+            </div>
             <div style="display: flex; gap: 1rem">
                 <mat-form-field>
-                    <mat-label> Minimum Price</mat-label>
+                    <mat-label> Minimum Mileage</mat-label>
                     <input type="number" matInput formControlName="minimumMileage"
                            [value]="this.form.get('minimumMileage')!.value">
                 </mat-form-field>
                 <mat-form-field>
-                    <mat-label> Maximum Price</mat-label>
+                    <mat-label> Maximum Mileage</mat-label>
                     <input type="number" matInput formControlName="maximumMileage"
                            [value]="this.form.get('maximumMileage')!.value">
                 </mat-form-field>
