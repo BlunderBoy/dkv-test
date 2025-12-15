@@ -33,23 +33,23 @@ export class SortersComponent {
     });
 
 
-    changeDirection(signal: WritableSignal<SortingValues>) {
+    changeDirection(sortingSignal: WritableSignal<SortingValues>) {
         const otherSignal =
-            signal === this.nameSortingDirection
+            sortingSignal === this.nameSortingDirection
                 ? this.mileageSortingDirection
                 : this.nameSortingDirection;
 
         otherSignal.set('');
 
-        switch (signal()) {
+        switch (sortingSignal()) {
             case 'ascending':
-                signal.set('descending');
+                sortingSignal.set('descending');
                 break;
             case 'descending':
-                signal.set('');
+                sortingSignal.set('');
                 break;
             default:
-                signal.set('ascending');
+                sortingSignal.set('ascending');
         }
     }
 }
