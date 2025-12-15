@@ -36,7 +36,7 @@ import {MatCheckbox} from '@angular/material/checkbox';
 export class FiltersComponent {
     private readonly formBuilder = inject(FormBuilder);
 
-    filtersChanged = output<VehicleFilters>({});
+    filtersChanged = output<VehicleFilters>();
     fuelTypes: readonly FuelType[] = FUEL_TYPES;
     vehicleType: readonly VehicleType[] = VEHICLE_TYPES;
 
