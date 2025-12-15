@@ -1,21 +1,22 @@
-import {Component, effect, inject, signal} from '@angular/core';
-import {VehicleService} from '../../services/vehicle-service';
+import {ChangeDetectionStrategy, Component, effect, inject, signal} from '@angular/core';
 import {Vehicle} from '../../models/Vehicle.model';
 import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MatIcon} from '@angular/material/icon';
 import {MatFabButton, MatIconButton} from '@angular/material/button';
-import {Router} from '@angular/router';
-import {ListItem} from '../../shared/list-item/list-item';
+import {RouterLink} from '@angular/router';
+import {ListItemComponent} from '../../shared/list-item/list-item.component';
 import {MatDialog} from '@angular/material/dialog';
-import {CreateEditDialog} from '../../shared/create-edit-dialog/create-edit-dialog';
-import {ConfirmationDialog} from '../../shared/confirmation-dialog/confirmation-dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import {CreateEditDialogComponent} from '../../shared/create-edit-dialog/create-edit-dialog.component';
+import {ConfirmationDialogComponent} from '../../shared/confirmation-dialog/confirmation-dialog.component';
 import {MatTooltip} from '@angular/material/tooltip';
-import {Filters} from '../../shared/filters/filters';
+import {FiltersComponent} from '../../shared/filters/filters.component';
 import {VehicleFilters} from '../../models/VehicleFilters.model';
 import {MatExpansionPanel, MatExpansionPanelHeader} from '@angular/material/expansion';
-import {Sorters} from '../../shared/sorters/sorters';
+import {SortersComponent} from '../../shared/sorters/sorters.component';
 import {VehicleSorters} from '../../models/VehicleSorters.model';
+import {VehicleService} from '../../services/vehicle/vehicle.service';
+import {ToastService} from '../../services/toast/toast.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
     selector: 'app-home',
@@ -25,41 +26,44 @@ import {VehicleSorters} from '../../models/VehicleSorters.model';
         MatCardContent,
         MatIcon,
         MatIconButton,
-        ListItem,
+        ListItemComponent,
         MatFabButton,
         MatTooltip,
-        Filters,
+        FiltersComponent,
         MatExpansionPanel,
         MatExpansionPanelHeader,
-        Sorters
+        SortersComponent,
+        RouterLink,
+        MatProgressSpinner
     ],
     templateUrl: './home-page.component.html',
     styleUrl: './home-page.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomePage {
-    route = inject(Router);
-    dialog = inject<MatDialog>(MatDialog);
-    private vehicleService = inject(VehicleService);
-    toast = inject(MatSnackBar)
-    vehicles = signal<Vehicle[]>([]);
+export class HomePageComponent {
+    private readonly dialog = inject<MatDialog>(MatDialog);
+    private readonly vehicleService = inject(VehicleService);
+    private readonly toast = inject(ToastService);
 
-    filters = signal<VehicleFilters>({});
-    sorters = signal<VehicleSorters>({});
+    readonly vehicles = this.vehicleService.vehicles;
+    readonly loading = this.vehicleService.loading;
+    readonly filters = signal<VehicleFilters>({});
+    readonly sorters = signal<VehicleSorters>({});
 
-    constructor() {
-        effect(() => {
-            this.loadData(this.filters(), this.sorters())
-        });
-    }
+    private readonly loadVehiclesEffect = effect((onCleanup) => {
+        const filters = this.filters();
+        const sorters = this.sorters();
 
-    loadData(filters: VehicleFilters, sorters: VehicleSorters) {
-        this.vehicleService.getVehicles(filters, sorters).subscribe((backendVehicles) => {
-            this.vehicles.set(backendVehicles);
-        });
-    }
+        if (Object.keys(filters).length === 0 && Object.keys(sorters).length === 0) {
+            return;
+        }
+
+        this.vehicleService.setSorters(sorters);
+        this.vehicleService.setFilters(filters);
+    });
 
     onAddButtonPressed() {
-        const dialogRef = this.dialog.open(CreateEditDialog, {
+        const dialogRef = this.dialog.open(CreateEditDialogComponent, {
             data: {
                 isEditMode: false
             }
@@ -67,20 +71,15 @@ export class HomePage {
 
         dialogRef.afterClosed().subscribe((newVehicle: Vehicle | undefined) => {
             if (newVehicle) {
-                this.toast.open(`Added ${newVehicle.name} successfully`, "Close", {
-                    duration: 4000
-                });
-                this.vehicles.set([
-                    newVehicle,
-                    ...this.vehicles()
-                ]);
+                this.toast.message(`Added ${newVehicle.name} successfully`);
+                this.vehicleService.addVehicleToLocal(newVehicle);
             }
         });
     }
 
     onEditClicked(vehicle: Vehicle) {
 
-        const dialogRef = this.dialog.open(CreateEditDialog, {
+        const dialogRef = this.dialog.open(CreateEditDialogComponent, {
             data: {
                 isEditMode: true,
                 vehicleData: vehicle
@@ -89,24 +88,15 @@ export class HomePage {
 
         dialogRef.afterClosed().subscribe((updatedVehicle: Vehicle | undefined) => {
             if (updatedVehicle) {
-                this.vehicles.update((vehicles) => {
-                    this.toast.open(`Updated ${vehicle.name} successfully`, "Close", {
-                        duration: 4000
-                    });
-                    return vehicles.map(vehicleItem => {
-                        if (vehicleItem._id === updatedVehicle?._id) {
-                            return updatedVehicle;
-                        }
-                        return vehicleItem;
-                    })
-                })
+                this.toast.message(`Updated ${vehicle.name} successfully`);
+                this.vehicleService.updateVehicleInLocal(updatedVehicle);
             }
         });
     }
 
     onDeleteClicked(vehicle: Vehicle) {
 
-        const dialogRef = this.dialog.open(ConfirmationDialog, {
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
             data: {
                 title: `Are you sure you want to delete ${vehicle.name}`,
                 message: `By confirming this ${vehicle.name} will be deleted. This action cannot be reversed.`
@@ -116,18 +106,12 @@ export class HomePage {
         dialogRef.afterClosed().subscribe(confirmed => {
             if (confirmed) {
                 this.vehicleService.deleteVehicle(vehicle._id).subscribe({
-                    next: (value) => {
-                        this.vehicles.update((vehicles) => {
-                            return vehicles.filter(item => item._id !== vehicle._id)
-                        })
-                        this.toast.open(`Deleted ${vehicle.name} successfully`, "Close", {
-                            duration: 4000
-                        });
+                    next: () => {
+                        this.toast.message(`Deleted ${vehicle.name} successfully`);
+                        this.vehicleService.removeVehicleFromLocal(vehicle._id);
                     },
                     error: err => {
-                        this.toast.open(`Error encountered while deleting ${vehicle.name}, Error: ${err}`, "Close", {
-                            duration: 4000
-                        });
+                        this.toast.error(`Error encountered while deleting ${vehicle.name}`);
                     }
                 })
             }

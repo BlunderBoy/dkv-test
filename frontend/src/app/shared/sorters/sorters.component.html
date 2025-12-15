@@ -22,11 +22,11 @@
     <div> {{ name }}</div>
     <button matIconButton="tonal" (click)="changeDirection(signal)">
         @if (signal() === 'ascending') {
-            <mat-icon> north</mat-icon>
+            <mat-icon> north </mat-icon>
         } @else if (signal() === 'descending') {
-            <mat-icon> south</mat-icon>
+            <mat-icon> south </mat-icon>
         } @else {
-            <mat-icon> remove</mat-icon>
+            <mat-icon> remove </mat-icon>
         }
     </button>
 </ng-template>

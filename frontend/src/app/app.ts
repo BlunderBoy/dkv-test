@@ -1,15 +1,16 @@
-import {Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {Router, RouterOutlet} from '@angular/router';
 import {NgOptimizedImage} from '@angular/common';
-import {Search} from './shared/search/search';
+import {SearchComponent} from './shared/search/search.component';
 
 @Component({
-  selector: 'app-root',
-    imports: [RouterOutlet, NgOptimizedImage, Search],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+    selector: 'app-root',
+    imports: [RouterOutlet, NgOptimizedImage, SearchComponent],
+    templateUrl: './app.html',
+    styleUrl: './app.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  protected readonly title = signal('frontend');
+    protected readonly title = signal('frontend');
     router = inject(Router);
 }

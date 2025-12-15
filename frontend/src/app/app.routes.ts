@@ -1,18 +1,18 @@
-import { Routes } from '@angular/router';
-import {HomePage} from './pages/home/home-page.component';
-import {VehiclePage} from './pages/vehicle/vehicle-page.component';
+import {Routes} from '@angular/router';
+import {HomePageComponent} from './pages/home/home-page.component';
+import {VehiclePageComponent} from './pages/vehicle/vehicle-page.component';
 
 export const routes: Routes = [
-  {
-    path: '',
-    component: HomePage
-  },
-  {
-    path: 'vehicles/:vehicleId',
-    component: VehiclePage
-  },
-  {
-    path: '**',
-    redirectTo: ''
-  }
+    {
+        path: '',
+        loadComponent: () => import('./pages/home/home-page.component').then(m => m.HomePageComponent)
+    },
+    {
+        path: 'vehicles/:vehicleId',
+        loadComponent: () => import('./pages/vehicle/vehicle-page.component').then(m => m.VehiclePageComponent)
+    },
+    {
+        path: '**',
+        redirectTo: ''
+    }
 ];

@@ -1,10 +1,9 @@
-import {Component, computed, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {MatFormField, MatInput, MatLabel, MatPrefix, MatSuffix} from '@angular/material/input';
 import {MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
-import {debounceTime, distinctUntilChanged, map, switchMap} from 'rxjs';
-import {VehicleService} from '../../services/vehicle-service';
+import {debounceTime, distinctUntilChanged, map} from 'rxjs';
 import {Vehicle} from '../../models/Vehicle.model';
 import {
     MatAutocomplete,
@@ -15,9 +14,11 @@ import {
 import {MatSelectModule} from '@angular/material/select';
 import {MatOptionSelectionChange} from '@angular/material/core';
 import {Router} from '@angular/router';
-import {BoldSubstring} from '../../pipes/bold-substring';
+import {BoldSubstringPipe} from '../../pipes/bold-substring';
 import {TitleCasePipe} from '@angular/common';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {VehicleSearchService} from '../../services/vehicle/search/vehicle-search.service';
 
 @Component({
     selector: 'app-search',
@@ -34,42 +35,36 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
         MatOption,
         MatAutocompleteTrigger,
         MatSelectModule,
-        BoldSubstring,
-        TitleCasePipe
+        BoldSubstringPipe,
+        TitleCasePipe,
+        MatProgressSpinner
     ],
-    templateUrl: './search.html',
-    styleUrl: './search.css',
+    templateUrl: './search.component.html',
+    styleUrl: './search.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Search {
+export class SearchComponent {
 
-    formBuilder = inject(FormBuilder);
-    vehicleService = inject(VehicleService);
-    router = inject(Router);
+    private readonly formBuilder = inject(FormBuilder);
+    private readonly vehicleSearchService = inject(VehicleSearchService);
+    private readonly router = inject(Router);
+    searchResults = this.vehicleSearchService.vehicles;
+    searchQuery = this.vehicleSearchService.query;
+    loading = this.vehicleSearchService.loading;
 
     form = this.formBuilder.nonNullable.group({
         searchQuery: ['']
     })
-    subscription = this.form.valueChanges.pipe(
-            debounceTime(500),
-            map(value => value.searchQuery ?? ""),
-            distinctUntilChanged(),
-            switchMap((formValue) => {
-                this.searchQuery.set(formValue)
-                return this.vehicleService.searchVehicles(formValue);
-            }),
-            takeUntilDestroyed()
-        ).subscribe(formControlValue => {
-            this.searchResults.set(formControlValue)
-        })
 
-    searchResults = signal<Vehicle[]>([]);
-    searchQuery = signal('');
-    firstVehicle = computed(() => {
-        if (this.searchResults().length > 0) {
-            return this.searchResults()[0];
-        }
-        return undefined;
-    })
+    private readonly searchSubscription = this.form.valueChanges.pipe(
+        debounceTime(500),
+        map(value => value.searchQuery ?? ""),
+        distinctUntilChanged(),
+        takeUntilDestroyed()
+    ).subscribe(querystring => {
+        this.vehicleSearchService.setQuery(querystring)
+    });
+
 
     resetSearch() {
         this.form.patchValue({

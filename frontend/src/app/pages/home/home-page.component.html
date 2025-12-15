@@ -10,61 +10,68 @@
     </div>
     <div class="card-container">
         <mat-card>
-            @if (vehicles().length === 0) {
-                <mat-card-content style="display: flex; align-items: center; justify-content: center">
-                    <strong style="font-size: 2.5rem;">
-                        <p>No vehicles found for the current filters.</p>
-                        <p>Please reset the filters or adjust them.</p>
-                    </strong>
-                </mat-card-content>
-            } @else {
-                <div
-                    class="vehicle-container">
-                    @for (vehicle of vehicles(); track vehicle._id) {
-                        <mat-card>
-                            <mat-card-title style="display: flex; justify-content: space-between; align-items: center">
-                                <div
-                                    style="padding: 1rem; font-size: 2rem; display: flex; align-items: center; gap: 1rem; max-width: 50%">
-                                    <div style="width: 3rem; height: 3rem; background: gray"
-                                         matTooltip="Placeholder picture of brand logo">
-
-                                    </div>
-                                    {{ vehicle.name }} {{ vehicle.vehicleModel }} <span
-                                    style="font-size: 1.2rem"> {{ vehicle.manufacturer }} </span>
-                                </div>
-
-                                <div>
-                                    <button matTooltip="Edit"
-                                            mat-icon-button
-                                            (click)="onEditClicked(vehicle)">
-                                        <mat-icon>edit</mat-icon>
-                                    </button>
-                                    <button matTooltip="Delete"
-                                            matIconButton="outlined"
-                                            (click)="onDeleteClicked(vehicle)">
-                                        <mat-icon>delete</mat-icon>
-                                    </button>
-                                    <button matTooltip="Go to item page"
-                                            style="margin-left: 1rem"
-                                            mat-icon-button
-                                            (click)="route.navigate(['/vehicles', vehicle._id])">
-                                        <mat-icon>arrow_outward</mat-icon>
-                                    </button>
-                                </div>
-                            </mat-card-title>
-
-                            <mat-card-content>
-                                <div style="display: flex; justify-content: space-between">
-                                    <div style="display: flex; flex-direction: column; gap: 0.25rem; width: 100%">
-                                        <app-list-item label="Fuel type:" [value]="vehicle.fuel"></app-list-item>
-                                        <app-list-item label="Vehicle type:" [value]="vehicle.type"></app-list-item>
-                                        <app-list-item label="Mileage:" [value]="vehicle.mileage"></app-list-item>
-                                    </div>
-                                </div>
-                            </mat-card-content>
-                        </mat-card>
-                    }
+            @if (loading()) {
+                <div class="progress-spinner">
+                    <mat-spinner></mat-spinner>
                 </div>
+            } @else {
+                @if (vehicles().length === 0) {
+                    <mat-card-content style="display: flex; align-items: center; justify-content: center">
+                        <strong style="font-size: 2.5rem;">
+                            <p>No vehicles found for the current filters.</p>
+                            <p>Please reset the filters or adjust them.</p>
+                        </strong>
+                    </mat-card-content>
+                } @else {
+                    <div
+                        class="vehicle-container">
+                        @for (vehicle of vehicles(); track vehicle._id) {
+                            <mat-card>
+                                <mat-card-title
+                                    style="display: flex; justify-content: space-between; align-items: center">
+                                    <div
+                                        style="padding: 1rem; font-size: 2rem; display: flex; align-items: center; gap: 1rem; max-width: 50%">
+                                        <div style="width: 3rem; height: 3rem; background: gray"
+                                             matTooltip="Placeholder picture of brand logo">
+
+                                        </div>
+                                        {{ vehicle.name }} {{ vehicle.vehicleModel }} <span
+                                        style="font-size: 1.2rem"> {{ vehicle.manufacturer }} </span>
+                                    </div>
+
+                                    <div>
+                                        <button matTooltip="Edit"
+                                                mat-icon-button
+                                                (click)="onEditClicked(vehicle)">
+                                            <mat-icon>edit</mat-icon>
+                                        </button>
+                                        <button matTooltip="Delete"
+                                                matIconButton="outlined"
+                                                (click)="onDeleteClicked(vehicle)">
+                                            <mat-icon>delete</mat-icon>
+                                        </button>
+                                        <a [routerLink]="['/vehicles', vehicle._id]"
+                                           matTooltip="Go to item page"
+                                           style="margin-left: 1rem"
+                                           mat-icon-button>
+                                            <mat-icon>arrow_outward</mat-icon>
+                                        </a>
+                                    </div>
+                                </mat-card-title>
+
+                                <mat-card-content>
+                                    <div style="display: flex; justify-content: space-between">
+                                        <div style="display: flex; flex-direction: column; gap: 0.25rem; width: 100%">
+                                            <app-list-item label="Fuel type:" [value]="vehicle.fuel"></app-list-item>
+                                            <app-list-item label="Vehicle type:" [value]="vehicle.type"></app-list-item>
+                                            <app-list-item label="Mileage:" [value]="vehicle.mileage"></app-list-item>
+                                        </div>
+                                    </div>
+                                </mat-card-content>
+                            </mat-card>
+                        }
+                    </div>
+                }
             }
         </mat-card>
     </div>

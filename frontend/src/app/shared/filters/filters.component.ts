@@ -1,4 +1,4 @@
-import {Component, effect, inject, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, output, signal} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatSlider, MatSliderRangeThumb} from '@angular/material/slider';
 import {MatFormField, MatLabel, MatSuffix} from '@angular/material/form-field';
@@ -29,20 +29,25 @@ import {MatCheckbox} from '@angular/material/checkbox';
         MatSuffix,
         MatCheckbox
     ],
-    templateUrl: './filters.html',
-    styleUrl: './filters.css',
+    templateUrl: './filters.component.html',
+    styleUrl: './filters.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Filters {
-    formBuilder = inject(FormBuilder);
+export class FiltersComponent {
+    private readonly formBuilder = inject(FormBuilder);
+
     filtersChanged = output<VehicleFilters>({});
     fuelTypes: readonly FuelType[] = FUEL_TYPES;
     vehicleType: readonly VehicleType[] = VEHICLE_TYPES;
+
     form = this.formBuilder.nonNullable.group({
         fuelType: [''],
         vehicleType: [''],
         minimumMileage: [0, Validators.min(0)],
         maximumMileage: [150000, Validators.max(150000)]
     });
+
+    filtersDisabled = signal<boolean>(true);
 
     constructor() {
         this.disableMileageFilters();
@@ -65,9 +70,6 @@ export class Filters {
         this.form.get('maximumMileage')?.enable();
     }
 
-
-    filtersDisabled = signal<boolean>(true);
-
     formatLabel(value: number): string {
         if (value >= 1000) {
             return Math.round(value / 1000) + 'k';
@@ -77,12 +79,8 @@ export class Filters {
     }
 
     onFiltersReset() {
-        this.form.reset({
-            fuelType: '',
-            vehicleType: '',
-            minimumMileage: 0,
-            maximumMileage: 150000
-        });
+        this.filtersDisabled.set(true);
+        this.form.reset();
         this.filtersChanged.emit(this.form.value);
     }
 
@@ -90,7 +88,7 @@ export class Filters {
         this.filtersChanged.emit(this.form.value);
     }
 
-    clearFilter(controlName: string) {
+    clearFilters(controlName: string) {
         if (controlName === 'type') {
             this.form.get('vehicleType')?.reset();
         }

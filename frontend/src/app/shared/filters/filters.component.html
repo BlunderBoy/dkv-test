@@ -36,7 +36,7 @@
                         <mat-option [value]="vehicleType"> {{ vehicleType }}</mat-option>
                     }
                 </mat-select>
-                <button matIconButton matSuffix (click)="clearFilter('type')">
+                <button matIconButton matSuffix (click)="clearFilters('type')">
                     <mat-icon> cancel </mat-icon>
                 </button>
             </mat-form-field>
@@ -47,7 +47,7 @@
                         <mat-option [value]="fuelType"> {{ fuelType }}</mat-option>
                     }
                 </mat-select>
-                <button matIconButton matSuffix (click)="clearFilter('fuel')">
+                <button matIconButton matSuffix (click)="clearFilters('fuel')">
                     <mat-icon> cancel </mat-icon>
                 </button>
             </mat-form-field>

@@ -4,9 +4,7 @@ import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 @Pipe({
     name: 'boldSubstring'
 })
-export class BoldSubstring implements PipeTransform {
-
-    private sanitizer = inject(DomSanitizer);
+export class BoldSubstringPipe implements PipeTransform {
 
     boldHtml(html: string) {
         return `<strong>${html}</strong>`
@@ -26,11 +24,10 @@ export class BoldSubstring implements PipeTransform {
     if (!searchRegex.test(value)) {
         return value;
     }
-
     const replacedValue = value.replace(searchRegex, (match: string) => {
         return this.boldHtml(match);
     });
 
-    return this.sanitizer.bypassSecurityTrustHtml(`<div>${replacedValue}</div>`);
+    return `<div>${replacedValue}</div>`;
   }
 }

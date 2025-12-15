@@ -3,8 +3,11 @@
     <b> {{label()}} </b>
   </div>
   <div>
-      @if (value()) {
-        {{ value() }}
+
+      @let v = value();
+
+      @if (v !== undefined && v !== null) {
+        {{ v }}
       } @else {
           Not specified.
       }

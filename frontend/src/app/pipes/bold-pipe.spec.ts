@@ -1,8 +1,8 @@
-import { BoldSubstring } from './bold-substring';
+import { BoldSubstringPipe } from './bold-substring';
 
 describe('BoldSubstring', () => {
   it('create an instance', () => {
-    const pipe = new BoldSubstring();
+    const pipe = new BoldSubstringPipe();
     expect(pipe).toBeTruthy();
   });
 });

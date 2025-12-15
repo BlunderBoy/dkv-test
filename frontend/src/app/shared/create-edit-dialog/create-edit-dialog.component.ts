@@ -1,4 +1,4 @@
-import {Component, computed, effect, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal} from '@angular/core';
 import {
     MAT_DIALOG_DATA,
     MatDialogActions,
@@ -11,10 +11,10 @@ import {MatButton} from '@angular/material/button';
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatError, MatFormField, MatHint, MatLabel, MatSuffix} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
-import {VehicleService} from '../../services/vehicle-service';
 import {MatSelect} from '@angular/material/select';
-import {FUEL_TYPES, FuelType, VEHICLE_TYPES, VehicleType} from '../../models/Vehicle.model';
+import {FUEL_TYPES, FuelType, Vehicle, VEHICLE_TYPES, VehicleType} from '../../models/Vehicle.model';
 import {MatOption} from '@angular/material/autocomplete';
+import {VehicleService} from '../../services/vehicle/vehicle.service';
 
 type VehicleForm = {
         name: FormControl<string>;
@@ -45,24 +45,24 @@ type VehicleForm = {
         MatSelect,
         MatOption
     ],
-    templateUrl: './create-edit-dialog.html',
-    styleUrl: './create-edit-dialog.css',
+    templateUrl: './create-edit-dialog.component.html',
+    styleUrl: './create-edit-dialog.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreateEditDialog {
-    dialogData = inject(MAT_DIALOG_DATA);
-    vehicleService = inject(VehicleService);
-    private formBuilder = inject(FormBuilder);
-    dialogRef = inject(MatDialogRef)
+export class CreateEditDialogComponent implements OnInit {
+    private readonly dialogData = inject<{ isEditMode?: boolean, vehicleData: Vehicle }>(MAT_DIALOG_DATA);
+    private readonly vehicleService = inject(VehicleService);
+    private readonly formBuilder = inject(FormBuilder);
+    private readonly dialogRef = inject(MatDialogRef);
 
     error = signal('');
-    isEditMode = computed(() => this.dialogData.isEditMode)
+    isEditMode = this.dialogData.isEditMode ?? false;
 
     fuelTypes: readonly FuelType[] = FUEL_TYPES;
     vehicleType: readonly VehicleType[] = VEHICLE_TYPES;
-    constructor() {
-        effect(() => {
-            this.form.patchValue(this.dialogData.vehicleData)
-        });
+
+    ngOnInit(): void {
+        this.form.patchValue(this.dialogData.vehicleData)
     }
 
     form = this.formBuilder.nonNullable.group<VehicleForm>({
@@ -81,7 +81,7 @@ export class CreateEditDialog {
 
         const payload = this.form.getRawValue();
 
-        if (this.isEditMode()) {
+        if (this.isEditMode) {
             this.vehicleService.updateVehicle({...payload, _id: this.dialogData.vehicleData._id}).subscribe({
                 next: (value) => {
                     if (value) {

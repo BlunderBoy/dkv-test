@@ -1,4 +1,4 @@
-import {Component, effect, output, signal, WritableSignal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, output, signal, WritableSignal} from '@angular/core';
 import {MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {ReactiveFormsModule} from '@angular/forms';
@@ -15,23 +15,22 @@ type SortingValues = 'ascending' | '' | 'descending';
         ReactiveFormsModule,
         NgTemplateOutlet
     ],
-    templateUrl: './sorters.html',
-    styleUrl: './sorters.css',
+    templateUrl: './sorters.component.html',
+    styleUrl: './sorters.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Sorters {
+export class SortersComponent {
 
     sortersChanged = output<VehicleSorters>();
     nameSortingDirection = signal<SortingValues>('ascending');
     mileageSortingDirection = signal<SortingValues>('');
 
-    constructor() {
-        effect(() => {
-            this.sortersChanged.emit({
-                name: this.nameSortingDirection(),
-                mileage: this.mileageSortingDirection()
-            })
-        });
-    }
+    private readonly emitMessageEffect = effect(() => {
+        this.sortersChanged.emit({
+            name: this.nameSortingDirection(),
+            mileage: this.mileageSortingDirection()
+        })
+    });
 
 
     changeDirection(signal: WritableSignal<SortingValues>) {
